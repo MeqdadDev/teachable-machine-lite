@@ -1,4 +1,4 @@
-# Teachable Machine
+# Teachable Machine Lite
 
 A Python package to simplify the deployment process of exported [Teachable Machine](https://teachablemachine.withgoogle.com/) models into different embedded environments like Raspberry Pi and other SBCs using TensorFlowLite.
 
