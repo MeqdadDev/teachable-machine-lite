@@ -48,7 +48,6 @@ my_model.transform_image(interpreter, img)
 interpreter.invoke()
 results = my_model.classify_image(interpreter)
 
-print('all_predictions', results['all_predictions'])
 print('highest_class_id', results['highest_class_id'])
 print('highest_class_prob', results['highest_class_prob'])
 
