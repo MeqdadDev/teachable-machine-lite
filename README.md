@@ -2,21 +2,26 @@
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 [![Downloads](https://static.pepy.tech/badge/teachable-machine-lite)](https://pepy.tech/project/teachable-machine-lite)
+[![PyPI](https://img.shields.io/pypi/v/teachable-machine-lite)](https://pypi.org/project/teachable-machine-lite/)
 
-A Python package to simplify the deployment process of exported [Teachable Machine](https://teachablemachine.withgoogle.com/) models into different embedded environments like Raspberry Pi and other SBCs using TensorFlowLite.
+## Description
 
-Links:
+A Python package to simplify the deployment process of exported [Teachable Machine](https://teachablemachine.withgoogle.com/) models into different Robotics, AI and IoT controllers such as: Raspberry Pi, Jetson Nano and any other SBCs using TensorFlowLite framework.
 
-[PyPI](https://pypi.org/project/teachable-machine-lite/)
+Developed by [@MeqdadDev](https://www.github.com/MeqdadDev)
 
-[Source Code](https://github.com/MeqdadDev/teachable-machine-lite)
+## Supported Classifiers
+
+**Image Classification**: use exported and quantized TensorFlow Lite model from [Teachable Machine platfrom](https://teachablemachine.withgoogle.com/) (a model file with `tflite` extension).
 
 
 ## Requirements
 
-Python >= 3.8
+```
+Python >= 3.7
+```
 
-## How to install package
+## How to install Teachable Machine Lite Package
 
 ```bash
 pip install teachable-machine-lite
@@ -24,38 +29,44 @@ pip install teachable-machine-lite
 
 ## Dependencies
 
-```numpy, tflite-runtime```
-
-## How to use teachable machine lite package
-
-```py
-from teachable_machine_lite import TeachableMachineLite
-import cv2
-from tflite_runtime.interpreter import Interpreter
-
-model_path = 'models/model.tflite'
-interpreter = Interpreter(model_path)
-
-my_model = TeachableMachineLite(model_type='tflite', model_path=model_path)
-
-img_path = 'images/my_image.jpg'
-
-dim = my_model.get_image_dimensions(interpreter)
-height, width = dim['height'], dim['width']
-
-interpreter.allocate_tensors()
-
-img = cv2.imread(img_path)
-img = cv2.resize(img, (width, height))
-my_model.transform_image(interpreter, img)
-interpreter.invoke()
-results = my_model.classify_image(interpreter)
-
-print('highest_class_id', results['highest_class_id'])
-print('highest_class_prob', results['highest_class_prob'])
-
+```bash
+numpy
+tflite-runtime
+Pillow (PIL)
 ```
 
-_highest_class_id_ is selected based on labels.txt file.
+## How to Use Teachable Machine Lite Package
 
-More features are coming soon...
+```python
+from teachable_machine_lite import TeachableMachineLite
+import cv2 as cv
+
+cap = cv.VideoCapture(0)
+
+model_path = 'model.tflite'
+image_file_name = "frame.jpg"
+labels_path = "labels.txt"
+
+tm_model = TeachableMachineLite(model_path=model_path, labels_file_path=labels_path)
+
+while True:
+    ret, frame = cap.read()
+    cv.imshow('Cam', frame)
+    cv.imwrite(image_file_name, frame)
+    
+    results = tm_model.classify_frame(image_file_name)
+    print("results:",results)
+    
+    k = cv.waitKey(1)
+    if k% 255 == 27:
+        # press ESC to close camera view.
+        break
+```
+
+## Links:
+
+[PyPI](https://pypi.org/project/teachable-machine-lite/)
+
+[Source Code](https://github.com/MeqdadDev/teachable-machine-lite)
+
+[Developer](https://github.com/MeqdadDev)
