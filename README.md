@@ -69,4 +69,4 @@ while True:
 
 [Source Code](https://github.com/MeqdadDev/teachable-machine-lite)
 
-[Developer](https://github.com/MeqdadDev)
+[Developer Profile](https://github.com/MeqdadDev)
