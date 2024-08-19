@@ -1,90 +1,121 @@
-from tflite_runtime.interpreter import Interpreter 
+from tflite_runtime.interpreter import Interpreter
 from PIL import Image
 import numpy as np
 import time
+import logging
 
-class TFLiteOps:
+class TFLiteUtils:
 
-    def transform_image(self, interpreter: Interpreter, image):
+    @staticmethod
+    def build_input_tensor(interpreter: Interpreter, image):
+        """
+        Builds the input tensor for the TFLite interpreter using the provided image.
+
+        Args:
+            interpreter (Interpreter): The TFLite interpreter.
+            image: The input image to be used for building the tensor.
+
+        Note:
+            This method modifies the interpreter's input tensor in-place.
+            The image should be pre-processed and have the correct dimensions
+            to match the interpreter's input tensor shape.
+        """
         tensor_index = interpreter.get_input_details()[0]['index']
         input_tensor = interpreter.tensor(tensor_index)()[0]
         input_tensor[:, :] = image
-    
-    def classify(self, interpreter: Interpreter, image, top_k=1):
-        self.transform_image(interpreter, image)
-        interpreter.invoke()
-        output_details = interpreter.get_output_details()[0]
-        output = np.squeeze(interpreter.get_tensor(output_details['index']))
 
+    @staticmethod
+    def classify(interpreter: Interpreter, image, top_k: int = 1):
+        """
+        Classifies the input image using the provided TFLite interpreter.
+
+        Args:
+            interpreter (Interpreter): The TFLite interpreter.
+            image: The input image to be classified.
+            top_k (int): The number of top predictions to return. Defaults to 1.
+
+        Returns:
+            tuple: A tuple containing (class_id, confidence_score) for the top prediction.
+
+        Raises:
+            ValueError: If the interpreter output is invalid or if there are missing keys in output details.
+            RuntimeError: If an unexpected error occurs during classification.
+
+        Note:
+            This method assumes that the model output is a list of class probabilities.
+        """
         try:
+            TFLiteUtils.build_input_tensor(interpreter, image)
+            interpreter.invoke()
+            output_details = interpreter.get_output_details()[0]
+            output = np.squeeze(interpreter.get_tensor(output_details['index']))
+
             if output_details['dtype'] == np.uint8:
                 scale, zero_point = output_details['quantization']
                 output = scale * (output - zero_point)
-        except:
-            raise RuntimeError(
-                """NotQuantizedModel: No match with uint8 data type.""")
 
-        ordered = np.argpartition(-output, 1)
-        return [(i, output[i]) for i in ordered[:top_k]][0]
+            ordered = np.argpartition(-output, top_k)
+            return [(i, output[i]) for i in ordered[:top_k]][0]
+
+        except IndexError:
+            raise ValueError("Invalid interpreter output. Check if the model is correctly loaded.")
+        except KeyError as e:
+            raise ValueError(f"Missing key in output details: {str(e)}")
+        except Exception as e:
+            raise RuntimeError(f"Unexpected error during classification: {str(e)}")
 
 class TeachableMachineLite:
-    """
-    A class for TeachableMachineLite package to work with TeachableMachine models in tflite environment.
-
-    ...
-
-    Attributes
-    ----------
-    `model_path` : str
-        path for tflite model file. (default: `model.tflite`)
-    `label_path` : str
-        path for labels file. (default: `labels.txt`)
-    `model_type` : str
-        type of model file. (default: `tflite`)
-
-    Methods
-    -------
-    `classify_frame(frameFileName)`
-        Classifies the image based on the trained model file and labels file.
-    """
-
     def __init__(self, model_path='model.tflite', labels_file_path='labels.txt', model_type='tflite') -> None:
         """
-        Constructs all the necessary attributes for the TeachableMachineLite object.
+        Initialize the TeachableMachineLite object.
 
-        Parameters
-        ----------
-            `model_path` : str
-                path for tflite model file. (default: `model.tflite`)
-            `label_path` : str
-                path for labels file. (default: `labels.txt`)
-            `model_type` : str
-                type of model file. (default: `tflite`)
+        Args:
+            model_path (str): Path to the TFLite model file. Default is 'model.tflite'.
+            labels_file_path (str): Path to the labels file. Default is 'labels.txt'.
+            model_type (str): Type of the model. Default is 'tflite'.
+
+        Raises:
+            FileNotFoundError: If the model file is not found.
+            RuntimeError: If there's an error loading the model.
         """
         self.model_path = model_path
         self.label_path = labels_file_path
         self.model_type = model_type
+        self.interpreter = None
+
+        self._load_labels(self.label_path)
 
         try:
-            self.teachable_machine = TFLiteOps()
+            # Check if the model file exists
+            with open(self.model_path, 'rb') as f:
+                pass
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Model file not found: {self.model_path}")
+
+        try:
             self.interpreter = Interpreter(self.model_path)
             self.interpreter.allocate_tensors()
-            print('TeachableMachineLite Model loaded successfully.')
-        except:
-            raise RuntimeError(
-                """ModelLoadingError: Error while loading model, check out the name or path.""")
-    
+            logging.info(f"TeachableMachineLite Model '{self.model_path}' loaded successfully.")
+            print(f"TeachableMachineLite Model '{self.model_path}' loaded successfully.")
+        except Exception as e:
+            error_msg = f"Error loading model '{self.model_path}': {str(e)}"
+            logging.error(error_msg)
+            raise RuntimeError(error_msg)
+
+    def _load_labels(self, labels_file_path):
+        try:
+            with open(labels_file_path, "r") as file:
+                self._labels = file.readlines()
+        except IOError as e:
+            print("LoadingLabelsError: Error while loading labels.txt file")
+            raise IOError("Error loading labels") from e
+        except Exception as e:
+            print("LoadingLabelsError: Error while loading labels.txt file")
+            raise FileNotFoundError("Labels file not found") from e
+
     def _preprocess_image(self):
         _, self.height, self.width, _ = self.interpreter.get_input_details()[0]['shape']
 
-    def _load_labels(self):
-        try:
-            with open(self.label_path, 'r') as f:
-                return [line.strip() for i, line in enumerate(f.readlines())]
-        except FileNotFoundError as fnfe:
-            print("LabelsFileError: Error in labels file, check out name, path or content.")
-            raise (fnfe)
-    
     def classify_frame(self, frameFileName="frame.jpg"):
         """
         Classifies the image based on the trained model file and labels file.
@@ -119,7 +150,7 @@ class TeachableMachineLite:
             raise(fnfe)
         
         time1 = time.time()
-        label_id, prob = self.teachable_machine.classify(self.interpreter, image)
+        label_id, prob = TFLiteUtils.classify(self.interpreter, image)
         time2 = time.time()
         classification_time = np.round(time2-time1, 3)
 
@@ -146,7 +177,7 @@ class TeachableMachineLite:
         }
 
     def transform_image(self, interpreter, image):
-        self.teachable_machine.transform_image(self.interpreter, image)
+        TFLiteUtils.build_input_tensor(self.interpreter, image)
     
     def classify_image(self, interpreter, top_k=1):
         try:
