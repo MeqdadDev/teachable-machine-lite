@@ -4,68 +4,8 @@ import numpy as np
 import time
 import logging
 
-class TFLiteUtils:
-
-    @staticmethod
-    def build_input_tensor(interpreter: Interpreter, image):
-        """
-        Builds the input tensor for the TFLite interpreter using the provided image.
-
-        Args:
-            interpreter (Interpreter): The TFLite interpreter.
-            image: The input image to be used for building the tensor.
-
-        Note:
-            This method modifies the interpreter's input tensor in-place.
-            The image should be pre-processed and have the correct dimensions
-            to match the interpreter's input tensor shape.
-        """
-        tensor_index = interpreter.get_input_details()[0]['index']
-        input_tensor = interpreter.tensor(tensor_index)()[0]
-        input_tensor[:, :] = image
-
-    @staticmethod
-    def classify(interpreter: Interpreter, image, top_k: int = 1):
-        """
-        Classifies the input image using the provided TFLite interpreter.
-
-        Args:
-            interpreter (Interpreter): The TFLite interpreter.
-            image: The input image to be classified.
-            top_k (int): The number of top predictions to return. Defaults to 1.
-
-        Returns:
-            tuple: A tuple containing (class_id, confidence_score) for the top prediction.
-
-        Raises:
-            ValueError: If the interpreter output is invalid or if there are missing keys in output details.
-            RuntimeError: If an unexpected error occurs during classification.
-
-        Note:
-            This method assumes that the model output is a list of class probabilities.
-        """
-        try:
-            TFLiteUtils.build_input_tensor(interpreter, image)
-            interpreter.invoke()
-            output_details = interpreter.get_output_details()[0]
-            output = np.squeeze(interpreter.get_tensor(output_details['index']))
-
-            if output_details['dtype'] == np.uint8:
-                scale, zero_point = output_details['quantization']
-                output = scale * (output - zero_point)
-
-            ordered = np.argpartition(-output, top_k)
-            return [(i, output[i]) for i in ordered[:top_k]][0]
-
-        except IndexError:
-            raise ValueError("Invalid interpreter output. Check if the model is correctly loaded.")
-        except KeyError as e:
-            raise ValueError(f"Missing key in output details: {str(e)}")
-        except Exception as e:
-            raise RuntimeError(f"Unexpected error during classification: {str(e)}")
-
 class TeachableMachineLite:
-    def __init__(self, model_path='model.tflite', labels_file_path='labels.txt', model_type='tflite') -> None:
+    def __init__(self, model_path: str = 'model.tflite', labels_file_path: str = 'labels.txt', model_type: str = 'tflite') -> None:
         """
         Initialize the TeachableMachineLite object.
 
@@ -81,13 +21,17 @@ class TeachableMachineLite:
         self.model_path = model_path
         self.label_path = labels_file_path
         self.model_type = model_type
+
+        self._labels = None
+        self.height = None
+        self.width = None
         self.interpreter = None
 
         self._load_labels(self.label_path)
 
         try:
-            # Check if the model file exists
             with open(self.model_path, 'rb') as f:
+                # To check if the model file exists
                 pass
         except FileNotFoundError:
             raise FileNotFoundError(f"Model file not found: {self.model_path}")
@@ -97,67 +41,64 @@ class TeachableMachineLite:
             self.interpreter.allocate_tensors()
             logging.info(f"TeachableMachineLite Model '{self.model_path}' loaded successfully.")
             print(f"TeachableMachineLite Model '{self.model_path}' loaded successfully.")
+
         except Exception as e:
             error_msg = f"Error loading model '{self.model_path}': {str(e)}"
             logging.error(error_msg)
             raise RuntimeError(error_msg)
+        input_details = self.interpreter.get_input_details()[0]
+        _, self.height, self.width, _ = input_details['shape']
 
-    def _load_labels(self, labels_file_path):
-        try:
-            with open(labels_file_path, "r") as file:
-                self._labels = file.readlines()
-        except IOError as e:
-            print("LoadingLabelsError: Error while loading labels.txt file")
-            raise IOError("Error loading labels") from e
-        except Exception as e:
-            print("LoadingLabelsError: Error while loading labels.txt file")
-            raise FileNotFoundError("Labels file not found") from e
 
-    def _preprocess_image(self):
-        _, self.height, self.width, _ = self.interpreter.get_input_details()[0]['shape']
-
-    def classify_frame(self, frameFileName="frame.jpg"):
+    def classify_image(self, image_path: str, calc_time: bool = False):
         """
-        Classifies the image based on the trained model file and labels file.
-        
-        If the argument 'frameFileName' is passed, then it is assigned with `frame.jpg`.        
-        
-        Before using this method, you need to make sure that you have a stored image with correct file name.
+        Classifies an image using the model interpreter and returns the classification results.
 
-        This method takes the image name (str), not the image file itself (the matrix).
+        This method loads an image from the specified file path, preprocesses it, and classifies it using the
+        TFLite model interpreter. The classification result includes the predicted label, confidence score,
+        and the time taken for classification if requested.
 
-        Parameters
-        ----------
-        `frameFileName` : str
-            Pass the image file name with string type (default is `frame.jpg`)
+        Parameters:
+        -----------
+        image_path : str
+            The file path to the image that needs to be classified.
 
-        Returns
-        -------
-            `id` : int
-                id for class with highest prediction result.
-            `label` : str
-                name of class with highest prediction result based on the content of labels.txt file.
-            `time` : float
-                time of frame classification in seconds.
-            `confidence` : float
-                classification confidence (accuracy).
+        calc_time : bool, optional
+            If True, measures and returns the time taken for the classification process.
+            Defaults to False.
+
+        Returns:
+        --------
+        dict
+            A dictionary containing the classification results:
+            - "id" : int
+                The index of the predicted label.
+            - "label" : str
+                The predicted label corresponding to the image.
+            - "time" : float or None
+                The time taken to classify the image, in seconds (rounded to 3 decimal places).
+                Returns None if `calc_time` is False.
+            - "confidence" : float
+                The confidence level of the classification as a percentage.
+            - "highest_class_id" : int
+                The same as "id", for consistency.
+            - "highest_class_prob" : float
+                The same as "confidence", for consistency.
         """
-        self._preprocess_image()
-        try:
-            image = Image.open(frameFileName).convert('RGB').resize((self.width, self.height))
-        except FileNotFoundError as fnfe:
-            print("ImageFileNameError: Error in image file name, check out image file name or extension")
-            raise(fnfe)
-        
-        time1 = time.time()
-        label_id, prob = TFLiteUtils.classify(self.interpreter, image)
-        time2 = time.time()
-        classification_time = np.round(time2-time1, 3)
+        image = self._load_image(image_path)
 
-        labels = self._load_labels()
+        classification_time = None
 
-        classification_label = labels[label_id].split()[1]
-        classification_confidence = np.round(prob*100, 2)
+        if calc_time:
+            start_time = time.time()
+
+        label_id, prob = self._predict(image, 1)[0]
+
+        if calc_time:
+            classification_time = np.round(time.time() - start_time, 3)
+
+        classification_label = self._labels[label_id].strip()
+        classification_confidence = np.round(prob * 100, 2)
 
         return {
             "id": label_id,
@@ -168,23 +109,140 @@ class TeachableMachineLite:
             "highest_class_prob": classification_confidence
         }
 
-    # below | old methods; for compatibility purposes with old codes.
-    def get_image_dimensions(self, interpreter):
-        _, height, width, _ = self.interpreter.get_input_details()[0]['shape']
-        return {
-            'height': height,
-            'width': width
-        }
+    def _build_input_tensor(self, image):
+        """
+        Prepares the input tensor for the TFLite interpreter with the given image.
 
-    def transform_image(self, interpreter, image):
-        TFLiteUtils.build_input_tensor(self.interpreter, image)
-    
-    def classify_image(self, interpreter, top_k=1):
+        This method sets up the input tensor for the TFLite interpreter by copying
+        the provided image into the tensor's memory. The image should already be
+        preprocessed and resized to match the model's expected input dimensions.
+
+        Parameters:
+        -----------
+        image : np.ndarray
+            The preprocessed image to be classified. The image should be a NumPy array
+            with the correct shape (height, width, channels) expected by the model.
+
+        Returns:
+        --------
+        None
+            The method modifies the interpreter's input tensor in place and does not return a value.
+        """
+        tensor_index = self.interpreter.get_input_details()[0]['index']
+        input_tensor = self.interpreter.tensor(tensor_index)()[0]
+        input_tensor[:, :] = image
+
+    def _predict(self, image, top_k: int = 1):
+        """
+        Classifies the input image using the model interpreter and returns the top predictions.
+
+        This method processes the input image through the TFLite model interpreter to generate predictions.
+        It returns the top predicted class IDs along with their confidence scores.
+
+        Args:
+        -----
+        image : np.ndarray
+            The preprocessed input image to be classified. The image should be a NumPy array
+            that has been resized and formatted according to the model's input specifications.
+
+        top_k : int, optional
+            The number of top predictions to return. Defaults to 1. If set to 1, a single prediction
+            (class_id, confidence_score) is returned. If set to a higher value, a list of the top
+            predictions is returned.
+
+        Returns:
+        --------
+        list of tuple or tuple
+            A list of tuples containing (class_id, confidence_score) for the top predictions.
+            If `top_k` is 1, a single-element list is returned with the highest prediction.
+
+        Raises:
+        -------
+        ValueError
+            If the interpreter output is invalid, such as when the model is not correctly loaded,
+            or if there are missing keys in the output details.
+
+        RuntimeError
+            If an unexpected error occurs during classification, such as issues during model inference.
+        """
         try:
-            print("Warning: This method is deprecated. Use `classify_frame` method instead of `classify_image`.")
-            return self.classify_frame("frame.jpg")
-        except FileNotFoundError as fnf:
-            print("Hint: Try to rename your image file with \"frame.jpg\", or it's recommended to use `classify_frame` method.")
-            print("ImageFileNameError: Error in image file name, check out image file name or extension")
-            raise(fnf)
-    
+            self._build_input_tensor(image)
+
+            # Run inference
+            self.interpreter.invoke()
+
+            output_details = self.interpreter.get_output_details()[0]
+            output = np.squeeze(self.interpreter.get_tensor(output_details['index']))
+
+            if output_details['dtype'] == np.uint8:
+                scale, zero_point = output_details['quantization']
+                output = scale * (output - zero_point)
+
+            if top_k == 1:
+                max_index = np.argmax(output)
+                return [(max_index, output[max_index])]
+            else:
+                ordered_indices = np.argpartition(-output, top_k)[:top_k]
+                top_predictions = [(i, output[i]) for i in ordered_indices]
+                top_predictions.sort(key=lambda x: -x[1])  # Sort by confidence
+                return top_predictions
+
+        except IndexError:
+            raise ValueError("Invalid interpreter output. Ensure the model is correctly loaded.")
+        except KeyError as e:
+            raise ValueError(f"Missing key in output details: {str(e)}")
+        except Exception as e:
+            raise RuntimeError(f"Unexpected error during classification: {str(e)}")
+
+    def _load_image(self, image_path: str):
+        """
+        Loads and preprocesses an image for classification.
+
+        Parameters:
+        -----------
+        image_path : str
+            The file path to the image that needs to be loaded and preprocessed.
+
+        Returns:
+        --------
+        Image.Image
+            A PIL Image object that has been converted to RGB format and resized to match the model's input dimensions.
+
+        Raises:
+        -------
+        IOError
+            If the image file cannot be found, opened, or processed, an IOError is raised with a descriptive message.
+        """
+        try:
+            # Load, convert, and resize the image
+            image = (Image.open(image_path)
+                     .convert('RGB')
+                     .resize((self.width, self.height)))
+            return np.array(image)
+        except IOError as io_error:
+            print(f"Error loading image '{image_path}': {io_error}")
+            raise
+
+    def _load_labels(self, labels_file_path: str):
+        """
+        Loads the classification labels from a specified file.
+
+        This method reads labels from a given file and stores them in the instance variable `_labels`.
+        The labels are expected to be in a text file where each label is on a new line.
+
+        Parameters:
+        -----------
+        labels_file_path : str
+            The file path to the labels file that needs to be loaded.
+
+        Raises:
+        -------
+        IOError
+            If the file cannot be found, opened, or read, an IOError is raised with a descriptive message.
+        """
+        try:
+            with open(labels_file_path, "r") as file:
+                self._labels = file.readlines()
+        except IOError as e:
+            print(f"Error loading labels from '{labels_file_path}': {e}")
+            raise IOError("Error loading labels") from e
