@@ -1,5 +1,5 @@
 from tflite_runtime.interpreter import Interpreter
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 import time
 import logging
@@ -85,7 +85,7 @@ class TeachableMachineLite:
             - "highest_class_prob" : float
                 The same as "confidence", for consistency.
         """
-        image = self._load_image(image_path)
+        image = self._load_image(image_path, return_RGB=False ,return_resized=True)
 
         classification_time = None
 
@@ -108,6 +108,79 @@ class TeachableMachineLite:
             "highest_class_id": label_id,
             "highest_class_prob": classification_confidence
         }
+
+    def show_prediction_on_image(
+            self, image_path: str, classification_result=None, calc_time: bool = False, convert_to_bgr=True
+    ):
+        """
+        Draw the prediction results on the input image and return the modified image.
+
+        Parameters:
+        image_path (str): Path to the input image file.
+        classification_result (dict, optional): Pre-computed classification result. If not provided,
+            the method will classify the image using the `classify_image` method.
+        calc_time (bool, optional): Whether to calculate the time taken to classify the image.
+            Default is False.
+        convert_to_bgr (bool, optional): Whether to convert the output image from RGB to BGR format.
+            This is useful when the image will be used with OpenCV. Default is True.
+
+        Returns:
+        np.ndarray or PIL.Image.Image: The image with the prediction results drawn on it. If `convert_to_bgr`
+            is True, the output is a NumPy array in BGR format. Otherwise, it's a PIL.Image.Image in RGB format.
+        """
+        image = self._load_image(image_path, return_RGB=True, return_resized=False)
+
+        if classification_result is None:
+            classification_result = self.classify_image(image_path, calc_time)
+
+        class_name = classification_result["label"]
+        confidence = classification_result["confidence"]
+        confidence_percent_text = f"{class_name}: {confidence:.2f}%"
+
+        draw = ImageDraw.Draw(image)
+        font_size = int(image.height * 0.04)  # 4% of the image height
+        font = ImageFont.truetype("DejaVuSans-Bold.ttf", font_size)
+        _, _, text_width, text_height = draw.textbbox((0, 0), text=confidence_percent_text, font=font)
+        position = (10, image.height - text_height - 10)
+
+        draw.rectangle(
+            [
+                position[0],
+                position[1],
+                position[0] + text_width,
+                position[1] + text_height,
+            ],
+            fill=(0, 0, 0, 128), )
+
+        draw.text(position, confidence_percent_text, font=font, fill=(255, 255, 255))
+
+        if convert_to_bgr:
+            image_2_numpy_arr = np.array(image)
+            # Convert RGB to BGR
+            image_2_numpy_arr = image_2_numpy_arr[:, :, ::-1]
+            return image_2_numpy_arr
+        return image
+
+    def classify_and_show(self, image_path: str, convert_to_bgr=True):
+        """
+        Classify an image and show the prediction results on the image.
+
+        Parameters:
+        image_path (str): Path of the input image to be classified.
+        convert_to_bgr (bool, optional): Whether to convert the image to BGR format for OpenCV.
+            If False, the image will be returned in RGB format. Default is True.
+
+        Returns:
+        tuple: (classification_result, image_with_prediction)
+            classification_result (dict): Classification results including class label, index, confidence and predictions.
+            image_with_prediction (np.ndarray or PIL.Image.Image): The image with prediction results drawn on it.
+                Returns a NumPy array in BGR format if convert_to_bgr is True.
+                Otherwise, returns a PIL.Image.Image in RGB format.
+        """
+        classification_result = self.classify_image(image_path)
+        image_with_prediction = self.show_prediction_on_image(
+            image_path, classification_result, convert_to_bgr=convert_to_bgr)
+        return classification_result, image_with_prediction
 
     def _build_input_tensor(self, image):
         """
@@ -194,7 +267,7 @@ class TeachableMachineLite:
         except Exception as e:
             raise RuntimeError(f"Unexpected error during classification: {str(e)}")
 
-    def _load_image(self, image_path: str):
+    def _load_image(self, image_path: str, return_RGB: bool = False, return_resized: bool = False):
         """
         Loads and preprocesses an image for classification.
 
@@ -215,9 +288,11 @@ class TeachableMachineLite:
         """
         try:
             # Load, convert, and resize the image
-            image = (Image.open(image_path)
-                     .convert('RGB')
-                     .resize((self.width, self.height)))
+            image = Image.open(image_path).convert('RGB')
+            if return_resized:
+                image = Image.Image.resize(image, (self.width, self.height))
+            if return_RGB:
+                return image
             return np.array(image)
         except IOError as io_error:
             print(f"Error loading image '{image_path}': {io_error}")
