@@ -188,3 +188,8 @@ src/screenshot.jpg
 /screenshot.jpg
 /.idea/teachable-machine.iml
 /.idea/vcs.xml
+/venv-tm-lite/*
+/src/frame.jpg
+/venv-tm-lite/lib64/
+/src/model/*
+/.idea/*
