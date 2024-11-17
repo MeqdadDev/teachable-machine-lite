@@ -1,0 +1,15 @@
+site_name: Teachable Machine Lite Package - Documentation
+
+theme:
+  name: "readthedocs"
+
+plugins:
+  - mkdocstrings
+
+nav:
+  - Teachable Machine Lite - Home: index.md
+  - How-To Guide: how-to-guide.md
+  - Requirements: requirements.md
+  - Code Examples: codeExamples.md
+  - Explanation: explanation.md
+  - Contributing: contribution.md
