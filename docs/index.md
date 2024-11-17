@@ -13,7 +13,7 @@ _By: [Meqdad Darwish](https://github.com/MeqdadDev)_
 
 
 ## Description
-A lightweight Python package optimized for integrating exported models from Google's [Teachable Machine platform](https://teachablemachine.withgoogle.com/) into robotics and embedded systems environments. This streamlined version of [Teachable Machine](https://github.com/MeqdadDev/teachable-machine) is specifically designed for resource-constrained devices, making it easier to deploy and use your trained models in embedded applications. With a focus on efficiency and minimal dependencies, this tool maintains the core functionality while being more suitable for robotics and IoT projects.
+A lightweight Python package optimized for integrating exported models from Google's [Teachable Machine platform](https://teachablemachine.withgoogle.com/) into robotics and embedded systems environments. This streamlined version of [Teachable Machine Package](https://github.com/MeqdadDev/teachable-machine) is specifically designed for resource-constrained devices, making it easier to deploy and use your trained models in embedded applications. With a focus on efficiency and minimal dependencies, this tool maintains the core functionality while being more suitable for robotics and IoT projects.
 
 Source Code is published on [GitHub](https://github.com/MeqdadDev/teachable-machine-lite)
 

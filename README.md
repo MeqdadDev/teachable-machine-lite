@@ -13,13 +13,15 @@ _By: [Meqdad Darwish](https://github.com/MeqdadDev)_
 
 ## Description
 
-A Python package to simplify the deployment process of exported [Teachable Machine](https://teachablemachine.withgoogle.com/) models into different Robotics, AI and IoT controllers such as: Raspberry Pi, Jetson Nano and any other SBCs using TensorFlowLite framework.
+A lightweight Python package optimized for integrating exported models from Google's [Teachable Machine platform](https://teachablemachine.withgoogle.com/) into robotics and embedded systems environments. This streamlined version of [Teachable Machine Package](https://github.com/MeqdadDev/teachable-machine) is specifically designed for resource-constrained devices, making it easier to deploy and use your trained models in embedded applications. With a focus on efficiency and minimal dependencies, this tool maintains the core functionality while being more suitable for robotics and IoT projects.
 
-Developed by [@MeqdadDev](https://www.github.com/MeqdadDev)
+Source Code is published on [GitHub](https://github.com/MeqdadDev/teachable-machine-lite/)
+
+Read more about the project (requirements, installation, examples and more) in the [Documentation Website](https://meqdaddev.github.io/teachable-machine-lite/) 
 
 ## Supported Classifiers
 
-**Image Classification**: use exported and quantized TensorFlow Lite model from [Teachable Machine platfrom](https://teachablemachine.withgoogle.com/) (a model file with `tflite` extension).
+**Image Classification**: Use exported and quantized TensorFlow Lite model from [Teachable Machine platfrom](https://teachablemachine.withgoogle.com/) (a model file with `tflite` extension).
 
 
 ## Requirements
@@ -39,10 +41,12 @@ pip install teachable-machine-lite
 ```bash
 numpy
 tflite-runtime
-Pillow (PIL)
+Pillow
 ```
 
-## How to Use Teachable Machine Lite Package
+## Example
+
+An example for teachable machine lite package with OpenCV:
 
 ```python
 from teachable_machine_lite import TeachableMachineLite
@@ -50,30 +54,39 @@ import cv2 as cv
 
 cap = cv.VideoCapture(0)
 
-model_path = 'model.tflite'
-image_file_name = "frame.jpg"
+model_path = "model.tflite"
 labels_path = "labels.txt"
+image_file_name = "screenshot.jpg"
 
 tm_model = TeachableMachineLite(model_path=model_path, labels_file_path=labels_path)
 
 while True:
-    ret, frame = cap.read()
-    cv.imshow('Cam', frame)
-    cv.imwrite(image_file_name, frame)
-    
-    results = tm_model.classify_frame(image_file_name)
-    print("results:",results)
-    
+    ret, img = cap.read()
+    cv.imwrite(image_file_name, img)
+
+    results, resultImage = tm_model.classify_and_show(image_file_name, convert_to_bgr=True)
+    print("results:", results)
+
+    cv.imshow("Camera", resultImage)
     k = cv.waitKey(1)
-    if k% 255 == 27:
-        # press ESC to close camera view.
+    if k == 27:  # Press ESC to close the camera view
         break
+
+cap.release()
+cv.destroyAllWindows()
 ```
+Values of `results` are assigned based on the content of `labels.txt` file.
+
+For more; take a look on [these examples](https://meqdaddev.github.io/teachable-machine-lite/codeExamples/)
 
 ## Links:
 
-[PyPI](https://pypi.org/project/teachable-machine-lite/)
+### Links:
 
-[Source Code](https://github.com/MeqdadDev/teachable-machine-lite)
+- [Documentation](https://meqdaddev.github.io/teachable-machine-lite)
 
-[Developer Profile](https://github.com/MeqdadDev)
+- [PyPI](https://pypi.org/project/teachable-machine-lite/)
+
+- [Source Code](https://github.com/MeqdadDev/teachable-machine-lite)
+
+- [Teachable Machine Platform](https://teachablemachine.withgoogle.com/)
