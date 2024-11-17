@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Code Examples - Teachable Machine Lite Package - Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Code Examples";
+        var mkdocs_page_input_path = "codeExamples.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Teachable Machine Lite Package - Documentation
+        </a>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Teachable Machine Lite - Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../how-to-guide/">How-To Guide</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../requirements/">Requirements</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Code Examples</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#example-1">Example 1</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#example-2">Example 2</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../explanation/">Explanation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../contribution/">Contributing</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Teachable Machine Lite Package - Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Code Examples</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h2 id="code-examples">Code Examples</h2>
+<p>Before running any of the code examples, ensure that the package is installed successfully.
+You can find the installation instructions <a href="https://meqdaddev.github.io/teachable-machine-lite/how-to-guide/#how-to-install-the-package">here</a>.</p>
+<p>You also need to have an exported model (and also <strong>quantized</strong>) (with <code>.tflite</code> file extension) with an associated labels text file for the package to use in annotations.</p>
+<p><strong>Note:</strong> You can get an exported and quantized model from the TensorFlow Lite tab while exporting your model (in the Teachable Machine platform).</p>
+<p>Expected structure before running the code examples:</p>
+<pre><code>test-directory/
+├── model.tflite
+├── labels.txt
+└── app.py (your code example file)
+</code></pre>
+<h3 id="example-1">Example 1</h3>
+<p>In this example for the teachable machine lite package with OpenCV, we will classify frames coming from the camera view and display 
+the classification results on the camera view itself. We use <code>classify_and_show</code> to achieve this. See the code example below:</p>
+<pre><code class="language-python">from teachable_machine_lite import TeachableMachineLite
+import cv2 as cv
+
+cap = cv.VideoCapture(0)
+
+model_path = 'model.tflite'
+labels_path = &quot;labels.txt&quot;
+image_file_name = &quot;screenshot.jpg&quot;
+
+tm_model = TeachableMachineLite(model_path=model_path, labels_file_path=labels_path)
+
+while True:
+    ret, img = cap.read()
+    cv.imwrite(image_file_name, img)
+
+    results, resultImage = tm_model.classify_and_show(image_file_name, convert_to_bgr=True)
+    print(&quot;results:&quot;, results)
+
+    cv.imshow(&quot;Camera&quot;, resultImage)
+    k = cv.waitKey(1)
+    if k == 27:  # Press ESC to close the camera view
+        break
+
+cap.release()
+cv.destroyAllWindows()
+</code></pre>
+<p>The values of <code>result</code> are assigned based on the content of the <code>labels.txt</code> file.</p>
+<h3 id="example-2">Example 2</h3>
+<p>In this example for the teachable machine package with OpenCV, we will classify frames coming from the camera view and display 
+the classification results on the camera view itself, but with separated methods for each task.</p>
+<p>We use <code>classify_image</code> to classify the captured image but without showing the results on the camera view. Also, we use <code>show_prediction_on_image</code> to
+get a frame with previous classification results.</p>
+<p>Note that the <code>classify_image</code> method returns only the prediction results (a Python <code>dict</code>), not an image (numpy array or PIL.Image).</p>
+<p>See the code example below:</p>
+<pre><code class="language-python">from teachable_machine_lite import TeachableMachineLite
+import cv2 as cv
+
+cap = cv.VideoCapture(0)
+
+model_path = 'model.tflite'
+labels_path = &quot;labels.txt&quot;
+image_file_name = &quot;screenshot.jpg&quot;
+
+tm_model = TeachableMachineLite(model_path=model_path, labels_file_path=labels_path)
+
+while True:
+    ret, img = cap.read()
+    cv.imwrite(image_file_name, img)
+
+    results = tm_model.classify_image(image_file_name, False)
+    resultImage = tm_model.show_prediction_on_image(image_file_name, results)
+    print(&quot;results:&quot;, results)
+
+    cv.imshow(&quot;Camera&quot;, resultImage)
+    k = cv.waitKey(1)
+    if k == 27:  # Press ESC to close the camera view
+        break
+
+cap.release()
+cv.destroyAllWindows()
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../requirements/" class="btn btn-neutral float-left" title="Requirements"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../explanation/" class="btn btn-neutral float-right" title="Explanation">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../requirements/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../explanation/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
