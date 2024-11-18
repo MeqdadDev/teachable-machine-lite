@@ -191,5 +191,5 @@ src/screenshot.jpg
 /venv-tm-lite/*
 /src/frame.jpg
 /venv-tm-lite/lib64/
-/src/model/*
+/model/*
 /.idea/*
