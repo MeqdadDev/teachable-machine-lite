@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="teachable_machine_lite",
-    version="1.2",
+    version="1.2.0.1",
     description="A lightweight Python package optimized for integrating exported models from Google's Teachable Machine Platform into robotics and embedded systems environments. This streamlined version of Teachable Machine Package is specifically designed for resource-constrained devices, making it easier to deploy and use your trained models in embedded applications. With a focus on efficiency and minimal dependencies, this tool maintains the core functionality while being more suitable for robotics and IoT projects.",
     py_modules=["teachable_machine_lite"],
     package_dir={"": "src"},
