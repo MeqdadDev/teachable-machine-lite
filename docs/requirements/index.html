@@ -50,6 +50,10 @@
     <li class="toctree-l2"><a class="reference internal" href="#python-version">Python Version</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#important-compatibility-note">Important Compatibility Note:</a>
+    </li>
+        </ul>
     </li>
     </ul>
                 </li>
@@ -91,11 +95,21 @@
               
                 <h2 id="requirements">Requirements</h2>
 <h3 id="python-version">Python Version</h3>
-<p><code>Python &gt;= 3.7</code></p>
+<pre><code class="language-bash">Python &gt;= 3.9
+</code></pre>
 <h3 id="dependencies">Dependencies</h3>
 <pre><code class="language-bash">tflite_runtime
 Pillow
 numpy
+</code></pre>
+<h4 id="important-compatibility-note">Important Compatibility Note:</h4>
+<p>The Google Teachable Machine platform currently exports models that are not compatible with <code>numpy 2.x</code>. This package requires <code>numpy 1.x</code> (recommended <code>version 1.26.4</code>) to function correctly. Models exported from Teachable Machine may fail or produce unexpected results with <code>numpy 2.x</code>.</p>
+<p><strong>Numpy Installation recommendation:</strong></p>
+<pre><code class="language-bash">pip install numpy==1.26.4
+</code></pre>
+<p>This will ensure the compatibility with Teachable Machine models</p>
+<p>If you experience any model loading or inference issues, please verify your numpy version using:</p>
+<pre><code class="language-bash">python -m pip list | grep numpy
 </code></pre>
               
             </div>

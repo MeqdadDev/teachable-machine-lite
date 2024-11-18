@@ -3,12 +3,12 @@ _By: [Meqdad Darwish](https://github.com/MeqdadDev)_
 
 <p align="center">
 <picture>
-  <img alt="Teachable Machine Lite Package Logo" src="logo.png" width="50%" height="50%" >
+  <img alt="Teachable Machine Lite Package Logo" src="https://meqdaddev.github.io/teachable-machine-lite/logo.png" width="80%" height="80%" >
 </picture>
 </p>
 
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 [![Downloads](https://static.pepy.tech/badge/teachable-machine-lite)](https://pepy.tech/project/teachable-machine-lite)
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 [![PyPI](https://img.shields.io/pypi/v/teachable-machine-lite)](https://pypi.org/project/teachable-machine-lite/)
 
 ## Description
@@ -21,13 +21,19 @@ Read more about the project (requirements, installation, examples and more) in t
 
 ## Supported Classifiers
 
-**Image Classification**: Use exported and quantized TensorFlow Lite model from [Teachable Machine platfrom](https://teachablemachine.withgoogle.com/) (a model file with `tflite` extension).
+**Image Classification**: Use exported and quantized TensorFlow Lite model from [Teachable Machine Platform](https://teachablemachine.withgoogle.com/) (a model file with `tflite` extension).
 
 
 ## Requirements
 
+For detailed information about package requirements and dependencies, please visit our [documentation](https://meqdaddev.github.io/teachable-machine-lite/requirements/)
+
 ```
-Python >= 3.7
+Python >= 3.9
+```
+
+```
+numpy < 2.0 (v1.26.4 recommended)
 ```
 
 ## How to install Teachable Machine Lite Package
@@ -80,8 +86,6 @@ Values of `results` are assigned based on the content of `labels.txt` file.
 For more; take a look on [these examples](https://meqdaddev.github.io/teachable-machine-lite/codeExamples/)
 
 ## Links:
-
-### Links:
 
 - [Documentation](https://meqdaddev.github.io/teachable-machine-lite)
 
