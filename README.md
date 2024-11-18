@@ -26,7 +26,7 @@ Read more about the project (requirements, installation, examples and more) in t
 
 ## Requirements
 
-For detailed information about package requirements and dependencies, please visit our [documentation]((https://meqdaddev.github.io/teachable-machine-lite/requirements/))
+For detailed information about package requirements and dependencies, please visit our [documentation](https://meqdaddev.github.io/teachable-machine-lite/requirements/)
 
 ```
 Python >= 3.9
