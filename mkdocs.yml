@@ -13,3 +13,6 @@ nav:
   - Code Examples: codeExamples.md
   - Explanation: explanation.md
   - Contributing: contribution.md
+
+docs_dir: source_docs
+site_dir: docs
