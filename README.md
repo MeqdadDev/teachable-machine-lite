@@ -81,8 +81,6 @@ For more; take a look on [these examples](https://meqdaddev.github.io/teachable-
 
 ## Links:
 
-### Links:
-
 - [Documentation](https://meqdaddev.github.io/teachable-machine-lite)
 
 - [PyPI](https://pypi.org/project/teachable-machine-lite/)
