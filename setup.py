@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="teachable_machine_lite",
-    version="1.2.0.1",
+    version="1.2.0.2",
     description="A lightweight Python package optimized for integrating exported models from Google's Teachable Machine Platform into robotics and embedded systems environments. This streamlined version of Teachable Machine Package is specifically designed for resource-constrained devices, making it easier to deploy and use your trained models in embedded applications.",
     py_modules=["teachable_machine_lite"],
     package_dir={"": "src"},
@@ -27,7 +27,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     install_requires=[
-        "numpy",
+        "numpy==1.26.4",
         "tflite-runtime",
         "Pillow"
     ],
