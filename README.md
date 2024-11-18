@@ -26,8 +26,14 @@ Read more about the project (requirements, installation, examples and more) in t
 
 ## Requirements
 
+For detailed information about package requirements and dependencies, please visit our [documentation](https://meqdaddev.github.io/teachable-machine-lite/requirements/)
+
 ```
-Python >= 3.7
+Python >= 3.9
+```
+
+```
+numpy < 2.0 (v1.26.4 recommended)
 ```
 
 ## How to install Teachable Machine Lite Package
@@ -80,8 +86,6 @@ Values of `results` are assigned based on the content of `labels.txt` file.
 For more; take a look on [these examples](https://meqdaddev.github.io/teachable-machine-lite/codeExamples/)
 
 ## Links:
-
-### Links:
 
 - [Documentation](https://meqdaddev.github.io/teachable-machine-lite)
 
