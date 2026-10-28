@@ -2,4 +2,4 @@
 
 ### Package Components
 
-::: src.teachable_machine_lite
+::: teachable_machine_lite.TeachableMachineLite

@@ -75,6 +75,10 @@ instance/
 # Sphinx documentation
 docs/_build/
 
+# mkdocs build output (deployed by .github/workflows/docs.yml)
+_site/
+site/
+
 # PyBuilder
 .pybuilder/
 target/
