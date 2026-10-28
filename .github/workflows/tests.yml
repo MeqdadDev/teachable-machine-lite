@@ -13,8 +13,11 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
         include:
+          # setup-python has no Python 3.9 (end of life) build for newer Ubuntu images.
+          - os: ubuntu-24.04
+            python-version: "3.9"
           # 64-bit ARM Linux, the closest hosted runner to a Raspberry Pi 4/5.
           - os: ubuntu-24.04-arm
             python-version: "3.13"
