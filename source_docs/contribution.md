@@ -6,6 +6,15 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 For new features, please make sure you've tested your code in real environment. 
 And to avoid duplications, please take a sneak peek on the project structure and practices before making your PR.
 
+### Running the tests
+
+```bash
+pip install -r requirements.txt
+pytest
+```
+
+Please add an entry to the changelog for any user-facing change (see [Releasing](releasing.md)).
+
 For more details and questions, contact me via links below.
 
 ### 🔗 Contact me

@@ -1,10 +1,20 @@
 site_name: Teachable Machine Lite Package - Documentation
+site_url: https://meqdaddev.github.io/teachable-machine-lite/
+repo_url: https://github.com/MeqdadDev/teachable-machine-lite
 
 theme:
   name: "readthedocs"
 
 plugins:
-  - mkdocstrings
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            docstring_options:
+              returns_named_value: false
 
 nav:
   - Teachable Machine Lite - Home: index.md
@@ -12,7 +22,8 @@ nav:
   - Requirements: requirements.md
   - Code Examples: codeExamples.md
   - Explanation: explanation.md
+  - Changelog: changelog.md
   - Contributing: contribution.md
+  - Releasing: releasing.md
 
 docs_dir: source_docs
-site_dir: docs
