@@ -148,3 +148,64 @@ if result["confidence"] > 80:
 else:
     print("Not sure. Top guesses:", result["predictions"])
 ```
+
+### Example 5: Command-line webcam script
+
+Instead of writing the model and labels paths into the code, this script reads them from the command
+line, so the same script works with any exported model. Save it as `webcam.py`:
+
+```python
+import argparse
+
+import cv2 as cv
+
+from teachable_machine_lite import TeachableMachineLite
+
+parser = argparse.ArgumentParser(description="Classify webcam frames with a Teachable Machine model.")
+parser.add_argument("--model", default="model.tflite", help="path to the .tflite model file")
+parser.add_argument("--labels", default="labels.txt", help="path to the labels.txt file")
+parser.add_argument("--camera", type=int, default=0, help="camera index (try 1 for an external webcam)")
+parser.add_argument("--threads", type=int, default=None, help="CPU threads for inference, e.g. 4")
+parser.add_argument("--top-k", type=int, default=1, help="how many of the most likely classes to print")
+args = parser.parse_args()
+
+tm_model = TeachableMachineLite(
+    model_path=args.model, labels_file_path=args.labels, num_threads=args.threads)
+
+cap = cv.VideoCapture(args.camera)
+if not cap.isOpened():
+    raise SystemExit(f"Could not open camera {args.camera}.")
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    results, result_image = tm_model.classify_and_show(frame, top_k=args.top_k)
+    print(", ".join(f"{p['label']}: {p['confidence']}%" for p in results["predictions"]))
+
+    cv.imshow("Camera", result_image)
+    if cv.waitKey(1) == 27:  # Press ESC to quit
+        break
+
+cap.release()
+cv.destroyAllWindows()
+```
+
+Run it with the paths to your exported model:
+
+```bash
+python webcam.py --model path/to/model.tflite --labels path/to/labels.txt
+```
+
+With all the options, for example for a floating point export, an external webcam and 4 threads:
+
+```bash
+python webcam.py --model path/to/model_unquant.tflite --labels path/to/labels.txt --camera 1 --threads 4 --top-k 3
+```
+
+Put paths that contain spaces in quotes, e.g. `--model "C:\My Models\model.tflite"`.
+Run `python webcam.py --help` to list all the options.
+
+For the Raspberry Pi camera module, use Picamera2 as in [Example 3](#example-3-raspberry-pi-camera-module-picamera2);
+USB webcams work with this script on Raspberry Pi too.

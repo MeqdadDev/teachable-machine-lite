@@ -20,7 +20,7 @@ All notable changes to this project are documented in this file.
 - `top_k` parameter on `classify_image` and `classify_and_show`; results now include a `"predictions"` list with the `top_k` most likely classes.
 - A warning is logged when the number of labels doesn't match the model's outputs.
 - Test suite with small generated `.tflite` models (float, uint8 and int8), plus a CI workflow on Linux x86_64/ARM64, Windows and macOS.
-- Docs: Raspberry Pi installation guide (virtual environment, Picamera2), Picamera2 example, changelog and releasing pages. The docs site is now deployed automatically by GitHub Actions.
+- Docs: Raspberry Pi installation guide (virtual environment, Picamera2), Picamera2 example, command-line webcam example, upgrade guide, changelog and releasing pages. The docs site is now deployed automatically by GitHub Actions.
 
 ### Fixed
 
