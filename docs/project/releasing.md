@@ -1,3 +1,5 @@
+# Releasing
+
 ## Versioning
 
 This project follows [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`):
@@ -17,8 +19,7 @@ The version is defined in exactly one place: `__version__` in
 
 Every user-facing change is recorded in
 [`CHANGELOG.md`](https://github.com/MeqdadDev/teachable-machine-lite/blob/main/CHANGELOG.md)
-at the repo root, mirrored verbatim to `source_docs/changelog.md` (the docs site's Changelog page).
-The two files must stay identical.
+at the repo root. The docs site's Changelog page includes that file, so edit it only there.
 
 - Add the entry in the same PR as the change, under the header for the next release.
 - Group entries under `### Added`, `### Changed`, `### Fixed` or `### Removed`
@@ -28,7 +29,7 @@ The two files must stay identical.
 
 1. Check the next version's changelog section covers everything merged since the last release.
 2. Bump `__version__` in `src/__init__.py`.
-3. Replace `Unreleased` in the changelog header with the release date (in both files).
+3. Replace `Unreleased` in the changelog header with the release date.
 4. Commit to `main`.
 5. Tag and push: `git tag v1.3.0`, then `git push origin v1.3.0`.
 6. Create a GitHub Release from the tag, with that version's changelog section as release notes.
@@ -42,7 +43,8 @@ The two files must stay identical.
 
 The [docs site](https://meqdaddev.github.io/teachable-machine-lite/) redeploys automatically
 ([`docs.yml`](https://github.com/MeqdadDev/teachable-machine-lite/blob/main/.github/workflows/docs.yml))
-on every push to `main` that touches `source_docs/`, `src/` or `mkdocs.yml`.
+on every push to `main` that touches `docs/`, `examples/`, `src/`, `mkdocs.yml`,
+`requirements-docs.txt` or `CHANGELOG.md`.
 
 ## Regenerating the test models
 

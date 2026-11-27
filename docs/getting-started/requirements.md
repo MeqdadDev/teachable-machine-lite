@@ -1,23 +1,21 @@
-## Requirements
+# Requirements
 
-### Python Version
+## Python version
 
-```bash
-Python >= 3.9
-```
+Python 3.9 or later.
 
-### Dependencies
+## Dependencies
 
-```bash
-numpy >= 1.23.2   (NumPy 1.x and 2.x are both supported)
-Pillow >= 10.1
-ai-edge-litert    (LiteRT, Google's TensorFlow Lite runtime, on 64-bit systems)
-tflite-runtime    (only on 32-bit Raspberry Pi OS)
-```
+| Package | Version | When it's installed |
+|---|---|---|
+| `numpy` | 1.23.2 or later (NumPy 1.x and 2.x both work) | Always |
+| `Pillow` | 10.1 or later | Always |
+| `ai-edge-litert` (LiteRT, Google's TensorFlow Lite runtime) | Latest | Everywhere except 32-bit ARM (`armv7l`) |
+| `tflite-runtime` | Latest | 32-bit Raspberry Pi OS with Python 3.11 or earlier |
 
 `pip install teachable-machine-lite` picks the right runtime for your system automatically.
 
-### Supported platforms
+## Supported platforms
 
 | Platform | Runtime installed | Python |
 |---|---|---|
@@ -34,7 +32,7 @@ available from PyPI.
 If no runtime can be installed with pip on your system but TensorFlow is installed, the package
 falls back to `tensorflow.lite`.
 
-### About NumPy 2
+## About NumPy 2
 
 Versions up to 1.2.0.2 pinned `numpy==1.26.4`. That pin was needed because `tflite-runtime`
 (last released in 2023) is compiled against NumPy 1.x and crashes on import with NumPy 2.
