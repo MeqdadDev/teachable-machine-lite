@@ -49,7 +49,7 @@ setup(
     url="https://github.com/MeqdadDev/teachable-machine-lite/",
     project_urls={
         "Documentation": "https://meqdaddev.github.io/teachable-machine-lite/",
-        "Changelog": "https://meqdaddev.github.io/teachable-machine-lite/changelog/",
+        "Changelog": "https://meqdaddev.github.io/teachable-machine-lite/project/changelog/",
         "Source": "https://github.com/MeqdadDev/teachable-machine-lite/",
     },
     author="Meqdad Dev",

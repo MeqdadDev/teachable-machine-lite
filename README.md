@@ -28,7 +28,7 @@ Read more about the project (requirements, installation, examples and more) in t
 
 ## Requirements
 
-For detailed information about package requirements and supported platforms, please visit our [documentation](https://meqdaddev.github.io/teachable-machine-lite/requirements/)
+For detailed information about package requirements and supported platforms, please visit our [documentation](https://meqdaddev.github.io/teachable-machine-lite/getting-started/requirements/)
 
 ```
 Python >= 3.9
@@ -42,7 +42,7 @@ Works with NumPy 1.x and 2.x. On Raspberry Pi, use the **64-bit** Raspberry Pi O
 pip install teachable-machine-lite
 ```
 
-On Raspberry Pi OS, install inside a virtual environment; see the [installation guide](https://meqdaddev.github.io/teachable-machine-lite/how-to-guide/#how-to-install-on-raspberry-pi-os).
+On Raspberry Pi OS, install inside a virtual environment; see the [installation guide](https://meqdaddev.github.io/teachable-machine-lite/getting-started/installation/#how-to-install-on-raspberry-pi-os).
 
 ## Dependencies
 
@@ -85,13 +85,13 @@ cv.destroyAllWindows()
 ```
 Values of `results` are assigned based on the content of `labels.txt` file.
 
-For more, including the Raspberry Pi camera module (Picamera2), take a look at [these examples](https://meqdaddev.github.io/teachable-machine-lite/codeExamples/)
+For more, including the Raspberry Pi camera module (Picamera2), take a look at [these examples](https://meqdaddev.github.io/teachable-machine-lite/examples/)
 
 ## Links:
 
 - [Documentation](https://meqdaddev.github.io/teachable-machine-lite)
 
-- [Changelog](https://meqdaddev.github.io/teachable-machine-lite/changelog/)
+- [Changelog](https://meqdaddev.github.io/teachable-machine-lite/project/changelog/)
 
 - [PyPI](https://pypi.org/project/teachable-machine-lite/)
 

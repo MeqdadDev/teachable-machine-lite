@@ -1,0 +1,54 @@
+:root,
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #0a3a70;
+  --md-primary-fg-color--light: #28578c;
+  --md-primary-fg-color--dark: #062a53;
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: #ffffffb3;
+  --md-accent-fg-color: #1a73e8;
+  --md-accent-fg-color--transparent: rgba(26, 115, 232, 0.1);
+  --md-typeset-a-color: #0b5cbf;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-accent-fg-color: #6db0ff;
+  --md-accent-fg-color--transparent: rgba(109, 176, 255, 0.1);
+  --md-typeset-a-color: #6db0ff;
+}
+
+[data-md-color-scheme="slate"] .md-typeset {
+  --md-primary-fg-color: var(--md-accent-fg-color);
+  --md-primary-bg-color: #08203f;
+}
+
+.md-typeset h1.tm-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.tm-hero {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.tm-hero img {
+  width: 420px;
+  max-width: 100%;
+  border-radius: 12px;
+}
+
+.tm-hero p {
+  font-size: 1.05rem;
+}
+
+.md-typeset .grid.cards {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+.md-typeset table:not([class]) {
+  font-size: 0.72rem;
+}

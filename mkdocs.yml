@@ -1,12 +1,78 @@
-site_name: Teachable Machine Lite Package - Documentation
+site_name: Teachable Machine Lite
+site_description: Run Google Teachable Machine image models on Raspberry Pi, robots and other edge devices. Powered by LiteRT, no TensorFlow required.
 site_url: https://meqdaddev.github.io/teachable-machine-lite/
+site_author: Meqdad Darwish
 repo_url: https://github.com/MeqdadDev/teachable-machine-lite
+repo_name: MeqdadDev/teachable-machine-lite
+edit_uri: edit/main/docs/
+copyright: Copyright &copy; Meqdad Darwish
 
 theme:
-  name: "readthedocs"
+  name: material
+  logo: assets/logo-white.png
+  favicon: assets/favicon.png
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - content.action.edit
+    - content.code.copy
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.sections
+    - navigation.tabs
+    - navigation.top
+    - search.highlight
+    - toc.follow
+
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/MeqdadDev
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/teachable-machine-lite/
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/meqdad-darwish/
+    - icon: fontawesome/brands/x-twitter
+      link: https://twitter.com/MeqdadDev
+    - icon: fontawesome/brands/instagram
+      link: https://www.instagram.com/meqdad.dev/
+    - icon: fontawesome/solid/globe
+      link: https://meqdaddev.github.io/
 
 plugins:
   - search
+  # Keeps the addresses of the previous site working (published READMEs link to them).
+  - redirects:
+      redirect_maps:
+        how-to-guide.md: getting-started/installation.md
+        requirements.md: getting-started/requirements.md
+        codeExamples.md: examples/index.md
+        explanation.md: reference/api.md
+        changelog.md: project/changelog.md
+        contribution.md: project/contributing.md
+        releasing.md: project/releasing.md
   - mkdocstrings:
       handlers:
         python:
@@ -15,15 +81,61 @@ plugins:
             docstring_style: google
             docstring_options:
               returns_named_value: false
+            filters: ["!^_"]
+            members_order: source
+            merge_init_into_class: true
+            separate_signature: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_signature_annotations: true
+            show_source: false
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight
+  - pymdownx.keys
+  - pymdownx.snippets:
+      base_path: [!relative $config_dir]
+      check_paths: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
 
 nav:
-  - Teachable Machine Lite - Home: index.md
-  - How-To Guide: how-to-guide.md
-  - Requirements: requirements.md
-  - Code Examples: codeExamples.md
-  - Explanation: explanation.md
-  - Changelog: changelog.md
-  - Contributing: contribution.md
-  - Releasing: releasing.md
-
-docs_dir: source_docs
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Requirements: getting-started/requirements.md
+      - Export Your Model: getting-started/export-model.md
+      - Quick Start: getting-started/quickstart.md
+  - Guides:
+      - Images and Camera Frames: guides/images-and-frames.md
+      - Raspberry Pi: guides/raspberry-pi.md
+      - Speed and Accuracy: guides/performance.md
+      - Troubleshooting: guides/troubleshooting.md
+      - Upgrading from 1.2: guides/upgrading.md
+  - Examples:
+      - examples/index.md
+      - Webcam Classifier: examples/webcam.md
+      - Separate Drawing: examples/separate-drawing.md
+      - Raspberry Pi Camera: examples/picamera2.md
+      - Image File: examples/image-file.md
+      - Command-Line Webcam: examples/command-line.md
+  - Reference:
+      - API: reference/api.md
+      - Results: reference/results.md
+  - Project:
+      - Changelog: project/changelog.md
+      - Contributing: project/contributing.md
+      - Releasing: project/releasing.md

@@ -1,61 +1,63 @@
-name: Deploy Docs
+name: Docs
 
-# Builds the mkdocs site from source_docs/ and deploys it to GitHub Pages.
-#
-# One-time setup: in Settings -> Pages -> "Build and deployment" -> Source, switch
-# from "Deploy from a branch" (the hand-built `docs` branch) to "GitHub Actions".
-# Until then this workflow builds the site but the deploy job fails.
+# Builds the docs site and deploys it to GitHub Pages
+# (the repository's Pages source must be "GitHub Actions").
 on:
   push:
     branches: [main]
     paths:
-      - "source_docs/**"
-      - "mkdocs.yml"
+      - "docs/**"
+      - "examples/**"
       - "src/**"
+      - "mkdocs.yml"
+      - "requirements-docs.txt"
+      - "CHANGELOG.md"
+      - ".github/workflows/docs.yml"
+  pull_request:
+    paths:
+      - "docs/**"
+      - "examples/**"
+      - "src/**"
+      - "mkdocs.yml"
+      - "requirements-docs.txt"
+      - "CHANGELOG.md"
       - ".github/workflows/docs.yml"
   workflow_dispatch:
 
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-          cache: "pip"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install mkdocs "mkdocstrings[python]"
-
-      - name: Build site
-        run: python -m mkdocs build --strict --site-dir _site
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-docs.txt
+      - run: python -m pip install -r requirements-docs.txt
+      - run: python -m mkdocs build --strict
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name != 'pull_request'
         with:
-          path: _site
+          path: site
 
   deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v4

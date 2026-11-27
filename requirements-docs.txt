@@ -1,0 +1,4 @@
+mkdocs-material>=9.6,<10
+# 1.2.3 adds a dependency on the "properdocs" MkDocs fork, so stay on 1.2.2.
+mkdocs-redirects==1.2.2
+mkdocstrings[python]>=0.30
